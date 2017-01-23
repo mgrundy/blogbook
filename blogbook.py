@@ -45,38 +45,41 @@ def save_chapters_from_doc(html_doc):
         id = m['id']
         # This is the title from the header link
         title = m.header.h2.a.string.encode('utf-8')
+        #title = m.header.h2.a.string
+        print title
         # This is the string representation of the publish date
         timestamp = m.footer.span.a.time.string.encode('utf-8')
         # This is the contents of the post
-        contents = m.div.encode("utf-8")
+        #contents = m.div.encode("utf-8")
+        contents = m.div
         write_html_file(id, title, timestamp, contents)
 
 def write_html_file(id, title, timestamp, contents):
-    bs = BeautifulSoup(None, 'html.parser')
-    html = TAG(bs, "html")
-    head = TAG(bs, "head")
-    title = TAG(bs, "title")
-    title.string = title
-    link = TAG(bs, "link")
+    bs = BeautifulSoup("", 'html.parser')
+    html = bs.new_tag( "html")
+    head = bs.new_tag( "head")
+    title_tag = bs.new_tag("title")
+    title_tag.append(title)
+    link = bs.new_tag( "link")
     #<link rel="stylesheet" href="style.css"  type="text/css"
     link['rel'] = "stylesheet"
     link['href'] = "style.css"
     link['type'] = "text/css"
-    body = TAG(bs, "body")
-    title = TAG(bs, "title")
-    h2 = TAG(bs, "h2")
-    h2["id"] = id
-    h2.string = title
+    body = bs.new_tag( "body")
+    h2 = bs.new_tag("h2", id=id)
+    h2.append(title)
+    content_span = bs.new_tag("span")
+    content_span.append(contents)
 
     bs.append(html)
     html.append(head)
-    head.append(title)
+    head.append(title_tag)
     head.append(link)
     html.append(body)
     body.append(h2)
-    body.append(contents)
-
-    bs.prettify()
+    body.append(content_span)
+    print "1234567890123456789012345678901234567890123456789012345678901233456789012345678901234567890", id
+    print bs.prettify()
 
 
 ## Add a target directory option (example: images/)
